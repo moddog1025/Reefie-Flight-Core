@@ -106,7 +106,7 @@ float getAltitude(bool filtered = true)
 
 uint32_t getPressure() 
 {
-    return baro.GetPres();
+    return uint32_t(baro.GetPres());
 }
 
 int16_t getTemperature() 

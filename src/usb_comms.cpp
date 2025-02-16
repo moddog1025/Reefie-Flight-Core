@@ -32,8 +32,8 @@ void executeCommand(int CC = 99, int SS = 99, String DD = "FF")
             break;
 
         case 5: // Flight Simulation
-            if (SS == 1) inSim = true;
-            else if (SS == 2) simAltitude = int16_t(DD.toInt());
+            if (SS == 0) inSim = true;
+            else if (SS == 1) simAltitude = DD.toFloat();
             
             break;
 

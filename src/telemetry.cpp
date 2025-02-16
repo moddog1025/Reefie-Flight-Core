@@ -21,7 +21,7 @@ void updateTelemetry()
 
     if (flightTelem.flightTime - prevFlightTime >= (1000 / flightParams.POLL_FREQ)) 
     {
-        unsigned long deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
+        double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
 
         flightTelem.altitude = getAltitude(true);
         if(inSim) flightTelem.altitude += simAltitude;
@@ -41,6 +41,34 @@ void updateTelemetry()
         prevVelocity = flightTelem.velocity;
         prevAcceleration = flightTelem.acceleration;
         prevFlightTime = flightTelem.flightTime;
+
+        printTelemetry();
     }
+}
+
+void printTelemetry()
+{
+    Serial.print("Time: ");
+    Serial.print(flightTelem.flightTime);
+    Serial.print(" ms, ");
+
+    Serial.print("Altitude: ");
+    Serial.print(flightTelem.altitude, 2);
+    Serial.print(" m, ");
+
+    Serial.print("Velocity: ");
+    Serial.print(flightTelem.velocity, 2);
+    Serial.print(" m/s, ");
+
+    Serial.print("Acceleration: ");
+    Serial.print(flightTelem.acceleration, 2);
+    Serial.print(" m/s², ");
+
+    Serial.print("Continuity: ");
+    Serial.print(flightTelem.continuity ? "Yes" : "No");
+    Serial.print(", ");
+
+    Serial.print("Light Level: ");
+    Serial.println(flightTelem.lightLevel);
 }
 

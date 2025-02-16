@@ -19,5 +19,6 @@ extern Telemetry flightTelem;
 extern float simAltitude;
 
 void updateTelemetry();
+void printTelemetry();
 
 #endif 

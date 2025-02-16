@@ -17,11 +17,6 @@ enum FlightState {
 
 FlightState currentState = PAD_IDLE;
 
-FlightParams flightParams = {30.0, 30, 365.0, 2.0, 0, 20};
-
-bool inFlight = false;
-bool inSim = false;
-
 const unsigned long LAUNCH_DEBOUNCE_TIME = 100;
 const unsigned long APOGEE_DEBOUNCE_TIME = 2000;
 const unsigned long DISREEF_DEBOUNCE_TIME = 1000;
@@ -42,11 +37,12 @@ void loop()
 {
     if (!inFlight) monitorUSB();
     updateTelemetry();
+    
 
     switch (currentState) 
     {
         case PAD_IDLE:
-            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD || readLightSensor() > flightParams.LIGHT_THRESHOLD)
+            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD) // || readLightSensor() > flightParams.LIGHT_THRESHOLD)
             {
               if (!debounceActive) 
               {
@@ -57,7 +53,8 @@ void loop()
               {
                 currentState = ASCENT;
                 inFlight = true;
-                Serial.println("State changed to ASCENT!");
+                Serial.println("LAUNCH! Acceleration: ");
+                Serial.print(flightTelem.acceleration);
                 debounceActive = false;
               }
             }
