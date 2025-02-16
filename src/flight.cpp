@@ -3,8 +3,12 @@
 #include "telemetry.h"
 #include "usb_comms.h"
 #include "EEPROM.h"
-#include "config.h"
 #include <Arduino.h>
+/*
+uint16_t LIGHT_THRESHOLD = 30;
+uint16_t LAUNCH_ACCEL_THRESHOLD = 5;
+uint16_t DIS_REEF_ALT = 1000;
+uint16_t TOUCHDOWN_THRESHOLD = 50;
 
 enum FlightState {
     PAD_IDLE,
@@ -16,14 +20,17 @@ enum FlightState {
 };
 
 FlightState currentState = PAD_IDLE;
-FlightParams flightParams;
 
-const uint8_t LAUNCH_DEBOUNCE_TIME = 100;
-const uint8_t APOGEE_DEBOUNCE_TIME = 2000;
-const uint8_t DISREEF_DEBOUNCE_TIME = 1000;
-const uint8_t TOUCHDOWN_DEBOUNCE_TIME = 1000;
+bool inFlight = false;
+
+const unsigned long LAUNCH_DEBOUNCE_TIME = 100;
+const unsigned long APOGEE_DEBOUNCE_TIME = 2000;
+const unsigned long DISREEF_DEBOUNCE_TIME = 1000;
+const unsigned long TOUCHDOWN_DEBOUNCE_TIME = 1000;
 bool debounceActive = false;
 unsigned long debounceStartTime = 0;
+
+void updateFlightParams();
 
 
 void setup() 
@@ -36,13 +43,13 @@ void setup()
 
 void loop() 
 {
-    if (!inFlight) monitorUSB();
     updateTelemetry();
 
     switch (currentState) 
     {
+
         case PAD_IDLE:
-            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD || readLightSensor() > flightParams.LIGHT_THRESHOLD)
+            if (flightTelem.acceleration > LAUNCH_ACCEL_THRESHOLD || readLightSensor() > LIGHT_THRESHOLD)
             {
               if (!debounceActive) 
               {
@@ -62,7 +69,7 @@ void loop()
             break;
 
         case ASCENT:
-            if (readLightSensor() > flightParams.LIGHT_THRESHOLD)
+            if (readLightSensor() > LIGHT_THRESHOLD)
             {
               if (!debounceActive) 
               {
@@ -81,7 +88,7 @@ void loop()
             break;
 
         case REEFED_DESCENT:
-            if (getAltitude(true) < flightParams.DISREEF_ALT)
+            if (getAltitude(true) < DIS_REEF_ALT)
             {
               if (!debounceActive) 
               {
@@ -101,7 +108,7 @@ void loop()
             break;
 
         case MAIN_DESCENT:
-            if (abs(getAltitude(true) - groundAltitude ) <= flightParams.VELOC_THRESHOLD)
+            if (abs(getAltitude(true) - groundAltitude ) <= TOUCHDOWN_THRESHOLD)
             {
               if (!debounceActive) 
               {
@@ -125,8 +132,23 @@ void loop()
             break;
         
         case PGRM_MODE:
+
+            checkForCommand();
+            sendSensorData();
+
             break;
     }
 
+    if (Serial.available() > 0 && (Serial.readStringUntil('\n') == "x00") &! inFlight)
+    {
+      Serial.println("CONNECT");
+      currentState = PGRM_MODE;
+    }
 }
 
+void updateFlightParams() 
+{
+  
+}
+
+*/

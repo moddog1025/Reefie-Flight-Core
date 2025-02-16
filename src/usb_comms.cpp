@@ -3,80 +3,61 @@
 #include "usb_comms.h"
 #include "barometer.h"
 #include "EEPROM.h"
+#include "telemetry.h"
+#include "config.h"
 
 
-struct FlightParams
+void executeCommand(int CC = 99, int SS = 99, String DD = "FF")
 {
-  uint16_t launchAltThreshold;
-  uint16_t lightThreshold;
-  uint16_t disreefAlt;
-  uint16_t touchdownThreshold;
-  uint16_t launchSiteIndex;
-};
-
-FlightParams flightParams = {20, 50, 1100, 0}; //Default flight parameters
-const int EEPROM_ADDRESS = 0;
-
-void executeCommand(String cmd)
-{
-    if (cmd == "x01") 
+    switch(CC)
     {
-        Serial.println("Running command: x01");
-        blinkLED(4, 500);
+        case 0: // USB Communication
+            Serial.println("Connected");
+            break;
+
+        case 1: // Hardware Configuration
+
+            break;
+
+        case 2: // Software Configuration
+
+            break;
+
+        case 3: // Flight Configuration
+
+            break;
+
+        case 4: // Hardware Testing
+
+            break;
+
+        case 5: // Flight Simulation
+            if (SS == 1) inSim = true;
+            else if (SS == 2) simAltitude = int16_t(DD.toInt());
+            
+            break;
+
+        case 6: // Flight Data
+
+            break;
     }
-    else if (cmd == "x02") 
-    {
-        Serial.println("Running command: x02");
-    } 
-    else if (cmd == "x03") 
-    {
-        Serial.println("Running command: x03");
-    } 
-    else 
-    {
-        Serial.println("Unknown Command!");
-    }
-
-    cmd = "xfff";
 }
 
-void checkForCommand() 
+void monitorUSB() 
 {
     if (Serial.available() > 0) 
     {
-        String command = Serial.readStringUntil('\n');
-        executeCommand(command);
+        String serialContent = Serial.readStringUntil('\n');
+
+        if (serialContent.startsWith("x") && serialContent.length() >= 6)
+        {
+        int CC = serialContent.substring(1, 3).toInt();
+        int SS = serialContent.substring(4, 6).toInt();
+        String DD = serialContent.substring(serialContent.indexOf('[') + 1, serialContent.indexOf(']'));
+
+        executeCommand(CC, SS, DD);
+        }
     }
-}
-
-void sendSensorData() 
-{
-    // Collect sensor data
-    double rawAltitude = getAltitude(false);      // Unfiltered altitude
-    double filteredAltitude = getAltitude(true);  // Filtered altitude
-    uint32_t pressure = (uint32_t)(getPressure());  // Convert to PSI
-    uint32_t temperatureC = getTemperature();      // Temperature in Celsius
-    uint16_t lightReading = readLightSensor();       // Light sensor value
-    bool continuity = checkContinuity();          // Continuity sensor value
-  
-    // Format data string
-    String data = "SENSOR,";
-    data += "ALT1:" + String(rawAltitude, 2) + ",";  // Altitude (unfiltered)
-    data += "ALT2:" + String(filteredAltitude, 2) + ",";  // Altitude (filtered)
-    data += "PRESSURE:" + String(pressure) + ",";  // Pressure in PSI
-    data += "TEMP:" + String(temperatureC, 2) + ",";  // Temperature in Celsius
-    data += "LIGHT:" + String(lightReading) + ",";  // Light sensor value
-    data += "CONTINUITY:" + String(continuity);  // Continuity sensor value
-  
-    // Send data to Serial Monitor
-    Serial.println(data);
-  }
-
-
-void saveFlightParamsToEEPROM() 
-{
-    EEPROM.put(EEPROM_ADDRESS, flightParams);
-    Serial.println("Flight parameters saved to EEPROM.");
 }
 
 

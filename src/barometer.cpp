@@ -84,7 +84,7 @@ void setGroundAltitude()
 }
 
 
-double getAltitude(bool filtered = true)
+int16_t getAltitude(bool filtered = true)
 {
     baro.checkUpdates();
     if (baro.isReady()) {
@@ -94,11 +94,11 @@ double getAltitude(bool filtered = true)
     }
 
     if (!filtered) {
-        return rawAltitude;
+        return int16_t(rawAltitude);
     }
     else {
         filteredAltitude = alpha * rawAltitude + (1 - alpha) * filteredAltitude;
-        return filteredAltitude;
+        return int16_t(filteredAltitude);
     }
     
 }
@@ -109,7 +109,7 @@ uint32_t getPressure()
     return baro.GetPres();
 }
 
-double getTemperature() 
+int16_t getTemperature() 
 {
     return baro.GetTemp();
 }

@@ -17,7 +17,7 @@ void initializePins();                                          // Initialize al
 void statusLED(bool led_on);                                    // Turn the status LED on or off
 void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250);
 bool checkContinuity();                                         // Check if continuity is detected
-uint16_t readLightSensor();                                     // Read light sensor value
+uint8_t readLightSensor();                                     // Read light sensor value
 void firePyro();                                                // Activate the pyro channel 
 void deactivatePyro();                                          // Deactivate the pyro channel
 void initializeBoard();                                         // Initialize the entire board (flash, barometer, pins, etc.)

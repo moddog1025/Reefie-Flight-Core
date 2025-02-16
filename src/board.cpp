@@ -3,16 +3,16 @@
 #include "flash.h"
 
 
-// Initialize all pin modes
+// Initialize pins
 void initializePins() {
-    pinMode(PYRO_CHANNEL_PIN, OUTPUT);  // Set pyro channel pin as output
-    digitalWrite(PYRO_CHANNEL_PIN, LOW); // Turn pyro channel off initially
+    pinMode(PYRO_CHANNEL_PIN, OUTPUT);  
+    digitalWrite(PYRO_CHANNEL_PIN, LOW); 
 
-    pinMode(STATUS_LED_PIN, OUTPUT);    // Set status LED pin as output
-    digitalWrite(STATUS_LED_PIN, LOW); // Turn status LED off initially
+    pinMode(STATUS_LED_PIN, OUTPUT);    
+    digitalWrite(STATUS_LED_PIN, LOW); 
 
-    pinMode(LIGHT_SENSOR_PIN, INPUT);   // Set light sensor pin as input
-    pinMode(CONTINUITY_PIN, INPUT);     // Set continuity pin as input
+    pinMode(LIGHT_SENSOR_PIN, INPUT);   
+    pinMode(CONTINUITY_PIN, INPUT);     
 
     Serial.println("Pins initialized successfully.");
 }
@@ -24,21 +24,21 @@ void statusLED(bool led_on) {
 
 void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250) {
     for (uint8_t i = 0; i < blinks; i++) {
-        statusLED(true);   // Turn LED on
-        delay(blinkDelay); // Wait for blink delay
-        statusLED(false);  // Turn LED off
-        delay(blinkDelay); // Wait before next blink
+        statusLED(true);   
+        delay(blinkDelay); 
+        statusLED(false);  
+        delay(blinkDelay); 
     }
 }
 
 // Check for continuity
 bool checkContinuity() {
-    int continuityReading = analogRead(CONTINUITY_PIN); // Read continuity pin
+    int8_t continuityReading = analogRead(CONTINUITY_PIN); // Read continuity pin
     return continuityReading > minContinuityValue; // Return true if continuity is detected
 }
 
 // Read light sensor value
-uint16_t readLightSensor() {
+uint8_t readLightSensor() {
     return analogRead(LIGHT_SENSOR_PIN);
 }
 
@@ -54,32 +54,17 @@ void deactivatePyro() {
 }
 
 // Initialize all components of the board
-void initializeBoard() {
-
+void initializeBoard() 
+{
     Serial.println("Initializing Reefie...");
-
-    // Initialize pins
     initializePins();
-
-    // Initialize flash chip
     initFlashChip();
     Serial.println("Flash chip initialized.");
-
-    // Initialize barometer
-    if (!initializeBarometer()) {
+    if (!initializeBarometer()) 
+    {
         Serial.println("Error: Barometer initialization failed!");
         while (true); 
     }
     Serial.println("Barometer initialized.");
     Serial.println("Ground altitude calibrated.");
-
-    // Flash status LED to indicate successful initialization
-    for (int i = 0; i < 3; i++) {
-        statusLED(true);
-        delay(200);
-        statusLED(false);
-        delay(200);
-    }
-
-    Serial.println("Reefie Initialization Complete!");
 }

@@ -6,13 +6,15 @@
 #include "board.h"
 #include "flash.h"
 
-const uint32_t pollFreq = 50;
+const uint8_t pollFreq = 20; //Hz
+extern bool flightSim = false;
+extern int16_t simAltitude = 0;
 
 struct Telemetry {
-    double altitude;      
-    double velocity;      
-    double acceleration;  
-    uint16_t lightLevel;  
+    int16_t altitude;      
+    int16_t velocity;      
+    int16_t acceleration;  
+    uint8_t lightLevel;  
     bool continuity;      
     uint32_t flightTime;  
 };

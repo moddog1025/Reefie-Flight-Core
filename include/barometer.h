@@ -20,8 +20,8 @@ extern int launchSite;                   // Launch site index
 // Functions
 bool initializeBarometer();              // Initialize the barometer
 void setGroundAltitude();                // Calibrate and set the ground altitude
-double getAltitude(bool); 
+int16_t getAltitude(bool); 
 uint32_t getPressure();
-double getTemperature();                 // Get the filtered altitude
+int16_t getTemperature();                 // Get the filtered altitude
 
 #endif // BAROMETER_H

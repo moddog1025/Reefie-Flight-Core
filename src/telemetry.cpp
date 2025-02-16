@@ -2,34 +2,27 @@
 #include "barometer.h"
 #include "board.h"
 #include "flash.h"
-
-const uint32_t pollFreq = 50;
-
-struct Telemetry {
-    double altitude;
-    double velocity;
-    double acceleration;
-    uint16_t lightLevel;
-    bool continuity;
-    uint32_t flightTime;
-};
+#include "telemetry.h"
 
 Telemetry flightTelem = {0, 0, 0, 0, false, 0};
 
-double prevAltitude = flightTelem.altitude;
-double prevVelocity = flightTelem.velocity;
-double prevAcceleration = flightTelem.acceleration;
+int16_t prevAltitude = flightTelem.altitude;
+int16_t prevVelocity = flightTelem.velocity;
+int16_t prevAcceleration = flightTelem.acceleration;
 uint32_t prevFlightTime = flightTelem.flightTime;
+
 
 void updateTelemetry()
 {
     flightTelem.flightTime = millis();
 
-    if (flightTelem.flightTime - prevFlightTime >= pollFreq) 
+    if (flightTelem.flightTime - prevFlightTime >= (1000/pollFreq)) 
     {
-        double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;  
+        double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
 
         flightTelem.altitude = getAltitude(true);
+        if(flightSim) flightTelem.altitude += simAltitude;
+
         if (deltaTime > 0) {
             flightTelem.velocity = (flightTelem.altitude - prevAltitude) / deltaTime;
             flightTelem.acceleration = (flightTelem.velocity - prevVelocity) / deltaTime;
