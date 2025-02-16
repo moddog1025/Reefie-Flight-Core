@@ -25,6 +25,8 @@ void updateTelemetry()
 
         flightTelem.altitude = getAltitude(true);
         if(inSim) flightTelem.altitude += simAltitude;
+        //Serial.print("Altitude ");
+        //Serial.println(flightTelem.altitude);
 
         if (deltaTime > 0) {
             flightTelem.velocity = (flightTelem.altitude - prevAltitude) / deltaTime;
@@ -42,7 +44,7 @@ void updateTelemetry()
         prevAcceleration = flightTelem.acceleration;
         prevFlightTime = flightTelem.flightTime;
 
-        printTelemetry();
+        //printTelemetry();
     }
 }
 

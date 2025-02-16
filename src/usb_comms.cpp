@@ -13,6 +13,7 @@ void executeCommand(int CC = 99, int SS = 99, String DD = "FF")
     {
         case 0: // USB Communication
             Serial.println("Connected");
+            blinkLED(5, 250);
             break;
 
         case 1: // Hardware Configuration
@@ -33,7 +34,12 @@ void executeCommand(int CC = 99, int SS = 99, String DD = "FF")
 
         case 5: // Flight Simulation
             if (SS == 0) inSim = true;
-            else if (SS == 1) simAltitude = DD.toFloat();
+            else if (SS == 1)
+            {
+                simAltitude = DD.toFloat();
+                Serial.print(simAltitude);
+            }
+            blinkLED(5, 250);
             
             break;
 
