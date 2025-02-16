@@ -3,13 +3,13 @@
 
 MS5x baro(&Wire);
 
-double seaLevelPressure = 0.0;
-double groundAltitude = 0.0;
-double pressure = 0.0;
-double temperature = 0.0;
-double rawAltitude = 0.0;
-double filteredAltitude = 0.0;
-const double alpha = 0.5;  // Smoothing factor for altitude filtering
+float seaLevelPressure = 0.0;
+float groundAltitude = 0.0;
+float pressure = 0.0;
+float temperature = 0.0;
+float rawAltitude = 0.0;
+float filteredAltitude = 0.0;
+const float alpha = 0.5;  // Smoothing factor for altitude filtering
 
 const float launchSiteAltitudes[] = {
     287.02,  // 0. Ames
@@ -50,10 +50,10 @@ void setGroundAltitude()
 {
     const int maxReadings = 200;        
     const int minReadings = 50;       
-    const double stabilityThreshold = 0.05; 
+    const float stabilityThreshold = 0.05; 
 
-    double totalAltitude = 0.0;  // Sum of altitudes for averaging
-    double lastAltitude = 0.0;   // Track the previous altitude
+    float totalAltitude = 0.0;  // Sum of altitudes for averaging
+    float lastAltitude = 0.0;   // Track the previous altitude
     int readingCount = 0;        // Count of valid readings
 
     while (readingCount < maxReadings) {
@@ -65,7 +65,7 @@ void setGroundAltitude()
                 seaLevelPressure = baro.getSeaLevel(launchSiteAltitudes[launchSite]);
             }
 
-            double currentAltitude = baro.getAltitude();
+            float currentAltitude = baro.getAltitude();
             totalAltitude += currentAltitude;
             readingCount++;
 
@@ -84,7 +84,7 @@ void setGroundAltitude()
 }
 
 
-int16_t getAltitude(bool filtered = true)
+float getAltitude(bool filtered = true)
 {
     baro.checkUpdates();
     if (baro.isReady()) {
@@ -94,11 +94,11 @@ int16_t getAltitude(bool filtered = true)
     }
 
     if (!filtered) {
-        return int16_t(rawAltitude);
+        return rawAltitude;
     }
     else {
         filteredAltitude = alpha * rawAltitude + (1 - alpha) * filteredAltitude;
-        return int16_t(filteredAltitude);
+        return filteredAltitude;
     }
     
 }

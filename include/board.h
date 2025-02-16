@@ -15,7 +15,7 @@
 // Function prototypes
 void initializePins();                                          // Initialize all pin modes
 void statusLED(bool led_on);                                    // Turn the status LED on or off
-void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250);
+void blinkLED(uint8_t blinks, uint16_t blinkDelay);
 bool checkContinuity();                                         // Check if continuity is detected
 uint8_t readLightSensor();                                     // Read light sensor value
 void firePyro();                                                // Activate the pyro channel 

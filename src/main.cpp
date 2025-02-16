@@ -16,12 +16,16 @@ enum FlightState {
 };
 
 FlightState currentState = PAD_IDLE;
-FlightParams flightParams;
 
-const uint8_t LAUNCH_DEBOUNCE_TIME = 100;
-const uint8_t APOGEE_DEBOUNCE_TIME = 2000;
-const uint8_t DISREEF_DEBOUNCE_TIME = 1000;
-const uint8_t TOUCHDOWN_DEBOUNCE_TIME = 1000;
+FlightParams flightParams = {30.0, 30, 365.0, 2.0, 0, 20};
+
+bool inFlight = false;
+bool inSim = false;
+
+const unsigned long LAUNCH_DEBOUNCE_TIME = 100;
+const unsigned long APOGEE_DEBOUNCE_TIME = 2000;
+const unsigned long DISREEF_DEBOUNCE_TIME = 1000;
+const unsigned long TOUCHDOWN_DEBOUNCE_TIME = 1000;
 bool debounceActive = false;
 unsigned long debounceStartTime = 0;
 

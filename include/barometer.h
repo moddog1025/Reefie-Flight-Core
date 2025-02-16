@@ -6,21 +6,21 @@
 
 // Constants
 extern const float launchSiteAltitudes[]; // Array of predefined launch site altitudes
-extern const double alpha;               // Smoothing factor for altitude filtering
+extern const float alpha;               // Smoothing factor for altitude filtering
 
 // Variables
-extern double seaLevelPressure;          // Sea level pressure in Pa
-extern double groundAltitude;            // Ground altitude in meters
-extern double pressure;                  // Current pressure in Pa
-extern double temperature;               // Current temperature in °C
-extern double rawAltitude;               // Raw altitude in meters
-extern double filteredAltitude;          // Filtered altitude in meters
+extern float seaLevelPressure;          // Sea level pressure in Pa
+extern float groundAltitude;            // Ground altitude in meters
+extern float pressure;                  // Current pressure in Pa
+extern float temperature;               // Current temperature in °C
+extern float rawAltitude;               // Raw altitude in meters
+extern float filteredAltitude;          // Filtered altitude in meters
 extern int launchSite;                   // Launch site index
 
 // Functions
 bool initializeBarometer();              // Initialize the barometer
 void setGroundAltitude();                // Calibrate and set the ground altitude
-int16_t getAltitude(bool); 
+float getAltitude(bool); 
 uint32_t getPressure();
 int16_t getTemperature();                 // Get the filtered altitude
 
