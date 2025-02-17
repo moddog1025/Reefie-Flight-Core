@@ -12,7 +12,9 @@ void initializePins() {
     digitalWrite(STATUS_LED_PIN, LOW); 
 
     pinMode(LIGHT_SENSOR_PIN, INPUT);   
-    pinMode(CONTINUITY_PIN, INPUT);     
+    pinMode(CONTINUITY_PIN, INPUT);
+      
+    initFlashChip();
 
     Serial.println("Pins initialized successfully.");
 }
@@ -32,9 +34,10 @@ void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250) {
 }
 
 // Check for continuity
-bool checkContinuity() {
-    int8_t continuityReading = analogRead(CONTINUITY_PIN); // Read continuity pin
-    return continuityReading > minContinuityValue; // Return true if continuity is detected
+uint8_t checkContinuity() 
+{
+    if (analogRead(CONTINUITY_PIN) >= 3) return 1;
+    else return 0;
 }
 
 // Read light sensor value

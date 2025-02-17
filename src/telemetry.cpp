@@ -4,10 +4,13 @@
 #include "flash.h"
 #include "telemetry.h"
 #include "config.h"
+#include "data.h"
 
 Telemetry flightTelem = {0.0, 0.0, 0.0, 0, false, 0};
 
 float simAltitude = 0.0;
+
+uint32_t launchTime = 0;
 
 float prevAltitude = flightTelem.altitude;
 float prevVelocity = flightTelem.velocity;
@@ -17,7 +20,7 @@ unsigned long prevFlightTime = flightTelem.flightTime;
 
 void updateTelemetry()
 {
-    flightTelem.flightTime = millis();
+    flightTelem.flightTime = millis() - launchTime;
 
     if (flightTelem.flightTime - prevFlightTime >= (1000 / flightParams.POLL_FREQ)) 
     {
@@ -44,8 +47,15 @@ void updateTelemetry()
         prevAcceleration = flightTelem.acceleration;
         prevFlightTime = flightTelem.flightTime;
 
+        if (inFlight) logDataPoint();
+
         //printTelemetry();
     }
+}
+
+void setFlightClock(uint32_t timeFC)
+{
+    launchTime = timeFC;
 }
 
 void printTelemetry()

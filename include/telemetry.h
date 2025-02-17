@@ -11,13 +11,14 @@ struct Telemetry {
     float velocity;      
     float acceleration;  
     uint8_t lightLevel;  
-    bool continuity;      
+    uint8_t continuity;      
     uint32_t flightTime;  
 };
 
 extern Telemetry flightTelem;
 extern float simAltitude;
 
+void setFlightClock(uint32_t timeFC);
 void updateTelemetry();
 void printTelemetry();
 

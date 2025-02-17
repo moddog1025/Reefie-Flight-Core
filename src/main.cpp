@@ -51,6 +51,7 @@ void loop()
               } 
               else if (millis() - debounceStartTime >= LAUNCH_DEBOUNCE_TIME) 
               {
+                setFlightClock(millis());
                 currentState = ASCENT;
                 inFlight = true;
                 Serial.println("LAUNCH! Acceleration: ");
