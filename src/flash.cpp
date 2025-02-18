@@ -91,3 +91,12 @@ void flashReadData(uint32_t addr, uint8_t* buffer, uint16_t length) {
 
     digitalWrite(CS_PIN, HIGH);
 }
+
+// Erases the entire chip using the CHIP_ERASE command.
+void flashChipErase() {
+    flashWriteEnable();
+    digitalWrite(CS_PIN, LOW);
+    SPI.transfer(CHIP_ERASE);
+    digitalWrite(CS_PIN, HIGH);
+    flashWaitForWriteCompletion();
+}

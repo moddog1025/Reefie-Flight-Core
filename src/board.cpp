@@ -4,7 +4,8 @@
 
 
 // Initialize pins
-void initializePins() {
+void initializePins() 
+{
     pinMode(PYRO_CHANNEL_PIN, OUTPUT);  
     digitalWrite(PYRO_CHANNEL_PIN, LOW); 
 
@@ -20,12 +21,15 @@ void initializePins() {
 }
 
 // Power status LED on or off
-void statusLED(bool led_on) {
+void statusLED(bool led_on) 
+{
     digitalWrite(STATUS_LED_PIN, led_on ? HIGH : LOW);
 }
 
-void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250) {
-    for (uint8_t i = 0; i < blinks; i++) {
+void blinkLED(uint8_t blinks, uint16_t blinkDelay = 250) 
+{
+    for (uint8_t i = 0; i < blinks; i++) 
+    {
         statusLED(true);   
         delay(blinkDelay); 
         statusLED(false);  
@@ -60,9 +64,11 @@ void deactivatePyro() {
 void initializeBoard() 
 {
     Serial.println("Initializing Reefie...");
+
     initializePins();
     initFlashChip();
     Serial.println("Flash chip initialized.");
+
     if (!initializeBarometer()) 
     {
         Serial.println("Error: Barometer initialization failed!");

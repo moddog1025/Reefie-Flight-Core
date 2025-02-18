@@ -7,55 +7,50 @@
 #include "data.h"
 
 Telemetry flightTelem = {0.0, 0.0, 0.0, 0, false, 0};
-
 float simAltitude = 0.0;
-
 uint32_t launchTime = 0;
 
-float prevAltitude = flightTelem.altitude;
-float prevVelocity = flightTelem.velocity;
-float prevAcceleration = flightTelem.acceleration;
-unsigned long prevFlightTime = flightTelem.flightTime;
-
+float prevAltitude = 0.0;
+float prevVelocity = 0.0;
+float prevAcceleration = 0.0;
+unsigned long prevFlightTime = 0;
 
 void updateTelemetry()
 {
     flightTelem.flightTime = millis() - launchTime;
 
-    if (flightTelem.flightTime - prevFlightTime >= (1000 / flightParams.POLL_FREQ)) 
+    if (flightTelem.flightTime - prevFlightTime < (1000 / flightParams.POLL_FREQ)) return;
+
+    double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
+
+    flightTelem.altitude = getAltitude(true);
+    if(inSim) flightTelem.altitude += simAltitude;
+
+    if (deltaTime > 0) 
     {
-        double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
-
-        flightTelem.altitude = getAltitude(true);
-        if(inSim) flightTelem.altitude += simAltitude;
-        //Serial.print("Altitude ");
-        //Serial.println(flightTelem.altitude);
-
-        if (deltaTime > 0) {
-            flightTelem.velocity = (flightTelem.altitude - prevAltitude) / deltaTime;
-            flightTelem.acceleration = (flightTelem.velocity - prevVelocity) / deltaTime;
-        } else {
-            flightTelem.velocity = 0;
-            flightTelem.acceleration = 0;
-        }
-
-        flightTelem.continuity = checkContinuity();
-        flightTelem.lightLevel = readLightSensor();
-
-        prevAltitude = flightTelem.altitude;
-        prevVelocity = flightTelem.velocity;
-        prevAcceleration = flightTelem.acceleration;
-        prevFlightTime = flightTelem.flightTime;
-
-        if (inFlight) logDataPoint();
-
-        //printTelemetry();
+        flightTelem.velocity = (flightTelem.altitude - prevAltitude) / deltaTime;
+        flightTelem.acceleration = (flightTelem.velocity - prevVelocity) / deltaTime;
+    } else 
+    {
+        flightTelem.velocity = 0;
+        flightTelem.acceleration = 0;
     }
+
+    flightTelem.continuity = checkContinuity();
+    flightTelem.lightLevel = readLightSensor();
+
+    prevAltitude = flightTelem.altitude;
+    prevVelocity = flightTelem.velocity;
+    prevAcceleration = flightTelem.acceleration;
+    prevFlightTime = flightTelem.flightTime;
+
+    if (inFlight) logDataPoint();
 }
 
 void setFlightClock(uint32_t timeFC)
 {
     launchTime = timeFC;
+    prevFlightTime = 0;
 }
 
 void printTelemetry()
@@ -83,4 +78,3 @@ void printTelemetry()
     Serial.print("Light Level: ");
     Serial.println(flightTelem.lightLevel);
 }
-

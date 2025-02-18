@@ -33,4 +33,7 @@ void flashSectorErase(uint32_t addr);
 void flashPageProgram(uint32_t addr, const uint8_t* data, uint16_t length);
 void flashReadData(uint32_t addr, uint8_t* buffer, uint16_t length);
 
+// Erase the entire flash chip.
+void flashChipErase();
+
 #endif // FLASH_H

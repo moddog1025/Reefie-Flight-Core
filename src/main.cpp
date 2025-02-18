@@ -1,10 +1,10 @@
-#include "board.h"
-#include "barometer.h"
-#include "telemetry.h"
-#include "usb_comms.h"
-#include "EEPROM.h"
-#include "config.h"
 #include <Arduino.h>
+#include "board.h"
+#include "data.h"
+#include "flash.h"
+#include "telemetry.h"
+#include "config.h"
+#include "usb_comms.h"
 
 enum FlightState {
     PAD_IDLE,
@@ -27,9 +27,20 @@ unsigned long debounceStartTime = 0;
 
 void setup() 
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
+
     initializeBoard();
-    blinkLED(5, 100);
+    readFlightHeader();
+
+    uint32_t lastFlightSector = flightHeader.flightSectors[flightHeader.currentFlightIndex];
+    if (lastFlightSector != 0) {
+        Serial.println("Flight log system ready. Waiting for launch...");
+    } else {
+        Serial.println("No valid flights detected. Initializing first flight...");
+        startNewFlight();  
+    }
+
+    blinkLED(3, 100);
 }
 
 
@@ -42,7 +53,7 @@ void loop()
     switch (currentState) 
     {
         case PAD_IDLE:
-            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD) // || readLightSensor() > flightParams.LIGHT_THRESHOLD)
+            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD || readLightSensor() > flightParams.LIGHT_THRESHOLD)
             {
               if (!debounceActive) 
               {
@@ -131,4 +142,3 @@ void loop()
     }
 
 }
-
