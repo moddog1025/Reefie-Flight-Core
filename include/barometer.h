@@ -1,7 +1,7 @@
 #ifndef BAROMETER_H
 #define BAROMETER_H
 
-#include <Arduino.h>
+#include "config.h"
 #include <MS5x.h>
 
 // Constants

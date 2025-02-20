@@ -1,8 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <stdint.h>
-#include <Arduino.h>
+#include "config.h"
 
 #define DATA_BUFFER_SIZE 10
 #define CRC8_POLY 0x31

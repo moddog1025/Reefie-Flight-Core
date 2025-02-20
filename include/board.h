@@ -1,7 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <Arduino.h>
+#include "config.h"
 
 // Pin definitions
 #define PYRO_CHANNEL_PIN 5

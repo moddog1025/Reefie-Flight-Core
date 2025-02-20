@@ -1,7 +1,4 @@
 #include "board.h"
-#include "barometer.h"
-#include "flash.h"
-
 
 // Initialize pins
 void initializePins() 
@@ -67,6 +64,17 @@ void initializeBoard()
 
     initializePins();
     initFlashChip();
+    readFlightHeader();
+    uint32_t lastFlightSector = flightHeader.flightSectors[flightHeader.currentFlightIndex];
+    if (lastFlightSector != 0) 
+    {
+        Serial.println("Flight log system ready. Waiting for launch...");
+    } 
+    else 
+    {
+        Serial.println("No valid flights detected. Initializing first flight...");
+        startNewFlight();  
+    }
     Serial.println("Flash chip initialized.");
 
     if (!initializeBarometer()) 
@@ -76,4 +84,6 @@ void initializeBoard()
     }
     Serial.println("Barometer initialized.");
     Serial.println("Ground altitude calibrated.");
+
+    blinkLED(3, 100);
 }

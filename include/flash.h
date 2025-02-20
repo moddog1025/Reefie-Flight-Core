@@ -1,8 +1,7 @@
 #ifndef FLASH_H
 #define FLASH_H
 
-#include <Arduino.h>
-#include <SPI.h>
+#include "config.h"
 
 // GD25QV16 Commands
 #define WRITE_ENABLE 0x06

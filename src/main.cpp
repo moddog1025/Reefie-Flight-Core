@@ -1,144 +1,77 @@
-#include <Arduino.h>
-#include "board.h"
-#include "data.h"
-#include "flash.h"
-#include "telemetry.h"
 #include "config.h"
-#include "usb_comms.h"
 
 enum FlightState {
     PAD_IDLE,
     ASCENT,
     REEFED_DESCENT,
     MAIN_DESCENT,
-    TOUCHDOWN,
-    PGRM_MODE
+    TOUCHDOWN
 };
 
 FlightState currentState = PAD_IDLE;
 
-const unsigned long LAUNCH_DEBOUNCE_TIME = 100;
+const unsigned long LAUNCH_DEBOUNCE_TIME = 100.0;
 const unsigned long APOGEE_DEBOUNCE_TIME = 2000;
 const unsigned long DISREEF_DEBOUNCE_TIME = 1000;
 const unsigned long TOUCHDOWN_DEBOUNCE_TIME = 1000;
-bool debounceActive = false;
-unsigned long debounceStartTime = 0;
-
 
 void setup() 
 {
     Serial.begin(115200);
-
     initializeBoard();
-    readFlightHeader();
-
-    uint32_t lastFlightSector = flightHeader.flightSectors[flightHeader.currentFlightIndex];
-    if (lastFlightSector != 0) {
-        Serial.println("Flight log system ready. Waiting for launch...");
-    } else {
-        Serial.println("No valid flights detected. Initializing first flight...");
-        startNewFlight();  
-    }
-
-    blinkLED(3, 100);
+    loadFlightParams();
 }
 
 
 void loop() 
 {
-    if (!inFlight) monitorUSB();
-    updateTelemetry();
-    
 
-    switch (currentState) 
-    {
-        case PAD_IDLE:
-            if (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD || readLightSensor() > flightParams.LIGHT_THRESHOLD)
-            {
-              if (!debounceActive) 
-              {
-                debounceStartTime = millis();
-                debounceActive = true;
-              } 
-              else if (millis() - debounceStartTime >= LAUNCH_DEBOUNCE_TIME) 
-              {
-                setFlightClock(millis());
-                currentState = ASCENT;
-                inFlight = true;
-                Serial.println("LAUNCH! Acceleration: ");
-                Serial.print(flightTelem.acceleration);
-                debounceActive = false;
-              }
-            }
-            else debounceActive = false;
+  if (!inFlight || inSim) monitorUSB();
+  updateTelemetry();
 
-            break;
+  switch (currentState) 
+  {
+    case PAD_IDLE:
 
-        case ASCENT:
-            if (readLightSensor() > flightParams.LIGHT_THRESHOLD)
-            {
-              if (!debounceActive) 
-              {
-                debounceStartTime = millis();
-                debounceActive = true;
-              } 
-              else if (millis() - debounceStartTime >= APOGEE_DEBOUNCE_TIME) 
-              {
-                currentState = REEFED_DESCENT;
-                Serial.println("State changed to REEFED_DESCENT!");
-                debounceActive = false;
-              }
-            } 
-            else debounceActive = false;
+      if (checkStateChange(launchedCheck, LAUNCH_DEBOUNCE_TIME))
+        {
+          currentState = ASCENT;
+          inFlight = true;
+          setFlightClock(millis());
+        }
+      break;
 
-            break;
 
-        case REEFED_DESCENT:
-            if (getAltitude(true) < flightParams.DISREEF_ALT)
-            {
-              if (!debounceActive) 
-              {
-                debounceStartTime = millis();
-                debounceActive = true;
-              } 
-              else if (millis() - debounceStartTime >= DISREEF_DEBOUNCE_TIME) 
-              {
-                firePyro();
-                currentState = MAIN_DESCENT;
-                Serial.println("State changed to MAIN_DESCENT!");
-                debounceActive = false;
-              }
-            } 
-            else debounceActive = false;
+    case ASCENT:
 
-            break;
+      if (checkStateChange(chuteDeployedCheck, APOGEE_DEBOUNCE_TIME)) 
+      {
+        currentState = REEFED_DESCENT;
+      }
+      break;
 
-        case MAIN_DESCENT:
-            if (abs(getAltitude(true) - groundAltitude ) <= flightParams.VELOC_THRESHOLD)
-            {
-              if (!debounceActive) 
-              {
-                debounceStartTime = millis();
-                debounceActive = true;
-              } 
-              else if (millis() - debounceStartTime >= TOUCHDOWN_DEBOUNCE_TIME) 
-              {
-                currentState = TOUCHDOWN;
-                Serial.println("State changed to TOUCHDOWN!");
-                debounceActive = false;
-              }
-            } 
-            else debounceActive = false;
 
-            break;
+    case REEFED_DESCENT:
 
-        case TOUCHDOWN:
-            inFlight = false;
-            while(1);
-            break;
-        
-        case PGRM_MODE:
-            break;
+      if (checkStateChange(disreefAltitudeCheck, DISREEF_DEBOUNCE_TIME)) 
+      {
+        firePyro();
+        currentState = MAIN_DESCENT;
+      }
+      break;
+
+    case MAIN_DESCENT:
+
+      if (checkStateChange(touchdownCheck, TOUCHDOWN_DEBOUNCE_TIME))
+      {
+        currentState = TOUCHDOWN;
+      }
+      break;
+
+    case TOUCHDOWN:
+
+      while(1);
+      break;
+
     }
-
 }

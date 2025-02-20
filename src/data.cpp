@@ -1,9 +1,4 @@
-#include "telemetry.h"
 #include "data.h"
-#include "barometer.h"
-#include "flash.h"
-#include <SPI.h>
-#include <string.h>
 
 DataPoint dataPoint;
 DataPoint buffer[DATA_BUFFER_SIZE];

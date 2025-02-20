@@ -1,5 +1,4 @@
 #include "barometer.h"
-#include <MS5x.h>
 
 MS5x baro(&Wire);
 

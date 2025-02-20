@@ -1,10 +1,28 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <Arduino.h>
+#include <SPI.h>
 #include <stdint.h>
+#include "EEPROM.h"
+#include "barometer.h"
+#include "board.h"
+#include "data.h"
+#include "flash.h"
+#include "state_handler.h"
+#include "telemetry.h"
+#include "usb_comms.h"
 
+#define EEPROM_ADDR 0
 
 //Default flight parameters
+#define DEF_ACCEL_THRESHOLD 30.0
+#define DEF_LIGHT_THRESHOLD 50
+#define DEF_DISREEF_ALT 365.0
+#define DEF_VELOC_THRESHOLD 2.0
+#define DEF_LAUNCH_SITE_ID 0
+#define DEF_POLL_FREQ 20
+
 struct FlightParams
 {
   float ACCEL_THRESHOLD;        //Acceleration needed to detect launch in m/s/s
@@ -19,6 +37,8 @@ extern FlightParams flightParams;
 extern bool inFlight;
 extern bool inSim;
 
-
+void loadFlightParams();
+void saveFlightParams();
+void printFlightParams();
 
 #endif

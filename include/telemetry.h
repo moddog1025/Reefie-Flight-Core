@@ -1,10 +1,7 @@
 #ifndef TELEMETRY_H
 #define TELEMETRY_H
 
-#include <Arduino.h>
-#include "barometer.h"
-#include "board.h"
-#include "flash.h"
+#include "config.h"
 
 struct Telemetry {
     float altitude;      

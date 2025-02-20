@@ -1,10 +1,4 @@
-#include <Arduino.h>
-#include "barometer.h"
-#include "board.h"
-#include "flash.h"
 #include "telemetry.h"
-#include "config.h"
-#include "data.h"
 
 Telemetry flightTelem = {0.0, 0.0, 0.0, 0, false, 0};
 float simAltitude = 0.0;
