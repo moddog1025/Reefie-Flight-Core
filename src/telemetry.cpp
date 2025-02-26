@@ -2,6 +2,7 @@
 
 Telemetry flightTelem = {0.0, 0.0, 0.0, 0, false, 0};
 float simAltitude = 0.0;
+bool needSimAlt = true;
 uint32_t launchTime = 0;
 
 float prevAltitude = 0.0;
@@ -13,12 +14,22 @@ void updateTelemetry()
 {
     flightTelem.flightTime = millis() - launchTime;
 
+    if (inSim && needSimAlt)
+    {
+        simAltitude = getSimAlt();
+        needSimAlt = false;
+    }
+
     if (flightTelem.flightTime - prevFlightTime < (1000 / flightParams.POLL_FREQ)) return;
 
     double deltaTime = (flightTelem.flightTime - prevFlightTime) / 1000.0;
 
     flightTelem.altitude = getAltitude(true);
-    if(inSim) flightTelem.altitude += simAltitude;
+    if(inSim) 
+    {
+        flightTelem.altitude = simAltitude;
+        needSimAlt = true;
+    }
 
     if (deltaTime > 0) 
     {
@@ -38,7 +49,8 @@ void updateTelemetry()
     prevAcceleration = flightTelem.acceleration;
     prevFlightTime = flightTelem.flightTime;
 
-    if (inFlight) logDataPoint();
+    if (inFlight || inSim) logDataPoint();
+    //printTelemetry();
 }
 
 void setFlightClock(uint32_t timeFC)

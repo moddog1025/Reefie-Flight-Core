@@ -15,6 +15,8 @@
 
 #define EEPROM_ADDR 0
 
+//#define TEST_MODE
+
 //Default flight parameters
 #define DEF_ACCEL_THRESHOLD 30.0
 #define DEF_LIGHT_THRESHOLD 50

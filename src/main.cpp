@@ -10,7 +10,7 @@ enum FlightState {
 
 FlightState currentState = PAD_IDLE;
 
-const unsigned long LAUNCH_DEBOUNCE_TIME = 100.0;
+const unsigned long LAUNCH_DEBOUNCE_TIME = 250;
 const unsigned long APOGEE_DEBOUNCE_TIME = 2000;
 const unsigned long DISREEF_DEBOUNCE_TIME = 1000;
 const unsigned long TOUCHDOWN_DEBOUNCE_TIME = 1000;
@@ -22,10 +22,10 @@ void setup()
     loadFlightParams();
 }
 
+//#ifndef TEST_MODE
 
 void loop() 
 {
-
   if (!inFlight || inSim) monitorUSB();
   updateTelemetry();
 
@@ -38,6 +38,7 @@ void loop()
           currentState = ASCENT;
           inFlight = true;
           setFlightClock(millis());
+          statusLED(true);
         }
       break;
 
@@ -47,6 +48,7 @@ void loop()
       if (checkStateChange(chuteDeployedCheck, APOGEE_DEBOUNCE_TIME)) 
       {
         currentState = REEFED_DESCENT;
+        statusLED(false);
       }
       break;
 
@@ -56,6 +58,7 @@ void loop()
       if (checkStateChange(disreefAltitudeCheck, DISREEF_DEBOUNCE_TIME)) 
       {
         firePyro();
+        blinkLED(3, 100);
         currentState = MAIN_DESCENT;
       }
       break;
@@ -65,6 +68,7 @@ void loop()
       if (checkStateChange(touchdownCheck, TOUCHDOWN_DEBOUNCE_TIME))
       {
         currentState = TOUCHDOWN;
+        statusLED(true);
       }
       break;
 
@@ -75,3 +79,5 @@ void loop()
 
     }
 }
+
+//#endif

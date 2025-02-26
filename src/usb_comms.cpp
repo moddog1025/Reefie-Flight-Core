@@ -1,5 +1,6 @@
 #include "usb_comms.h"
 
+bool downloadingSim = false;
 
 void executeCommand(int CC, int SS, String DD) {
     switch (CC) {
@@ -30,27 +31,8 @@ void executeCommand(int CC, int SS, String DD) {
             break;
 
         case 5: // Flight Simulation
-            if (SS == 0) { // Upload Simulation Data
-                if (DD == "START") {
-                    Serial.println("Ready to receive flight sim data.");
-                } 
-                else if (DD == "END") {
-                    Serial.println("Flight sim data upload complete.");
-                } 
-                else {
-                    // Convert incoming string to DataPoint
-                    DataPoint dp;
-                    sscanf(DD.c_str(), "%lu,%f,%f,%f,%lu,%hhu,%hhu", 
-                        &dp.time, &dp.altitude, &dp.velocity, &dp.acceleration, 
-                        &dp.pressure, &dp.light, &dp.continuity);
-                    
-                    logToBuffer(dp);  // Store in flash memory
-                    Serial.println("Data Logged.");
-                }
-            } 
-            else if (SS == 1) { // Run Simulation
+            if (SS == 0) { 
                 inSim = true;
-                Serial.println("Simulation Running.");
             }
             break;
 
@@ -90,4 +72,25 @@ void monitorUSB()
     }
 }
 
+float getSimAlt()
+{
+    Serial.println("Waiting for sim alt");
+    bool waitingForSim = true;
+    float incomingAlt = 0;
+    while(waitingForSim)
+    {
+        String serialContent = Serial.readStringUntil('\n');
+        if (serialContent.startsWith("x") && serialContent.length() >= 6)
+        {
+            int CC = serialContent.substring(1, 3).toInt();
+            int SS = serialContent.substring(4, 6).toInt();
+            String DD = serialContent.substring(serialContent.indexOf('[') + 1, serialContent.indexOf(']'));
+            if (CC == 5 && SS == 1)
+            {
+                waitingForSim = false;
+                return DD.toFloat();
+            }
+        }
+    }
+}
 

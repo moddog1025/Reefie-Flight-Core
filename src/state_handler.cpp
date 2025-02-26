@@ -7,17 +7,17 @@ typedef bool (*ConditionFunc)();
 
 bool launchedCheck()
 {
-    return (flightTelem.acceleration > flightParams.ACCEL_THRESHOLD || flightTelem.lightLevel > flightParams.LIGHT_THRESHOLD);
+    return (flightTelem.acceleration >= flightParams.ACCEL_THRESHOLD || flightTelem.lightLevel > flightParams.LIGHT_THRESHOLD);
 }
 
 bool chuteDeployedCheck()
 {
-    return (flightTelem.lightLevel > flightParams.LIGHT_THRESHOLD);
+    return (flightTelem.lightLevel >= flightParams.LIGHT_THRESHOLD);
 }
 
 bool disreefAltitudeCheck()
 {
-    return (flightTelem.altitude < flightParams.DISREEF_ALT);
+    return (flightTelem.altitude <= flightParams.DISREEF_ALT);
 }
 
 bool touchdownCheck()

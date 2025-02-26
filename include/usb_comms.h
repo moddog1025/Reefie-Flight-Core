@@ -5,5 +5,6 @@
 
 void executeCommand(int CC, int SS, String data);
 void monitorUSB();
+float getSimAlt();
 
 #endif
